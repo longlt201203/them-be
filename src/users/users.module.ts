@@ -11,6 +11,7 @@ import { CryptoModule } from '../crypto/crypto.module';
     CryptoModule
   ],
   controllers: [UsersController],
-  providers: [UsersService]
+  providers: [UsersService],
+  exports: [UsersService]
 })
 export class UsersModule {}

@@ -9,8 +9,8 @@ const ThemDataSource = new DataSource({
     database: ThemConfig.DB_NAME,
     username: ThemConfig.DB_USER,
     password: ThemConfig.DB_PASS,
-    entities: [resolve(__dirname + '/../**/*.entity.{js,ts}')],
-    migrations: [resolve(__dirname + '/../migrations/*.{js,ts}')],
+    entities: [resolve(__dirname + '/../**/*.entity{.js,.ts}')],
+    migrations: [resolve(__dirname + '/../migrations/*{.js,.ts}')],
     logging: 'all',
     logger: 'advanced-console'
 });

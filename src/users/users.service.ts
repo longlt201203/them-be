@@ -49,4 +49,24 @@ export class UsersService {
         });
         return [user, null];
     }
+
+    async findOneByEmailOrPhone(emailOrPhone: string) {
+        const user = await this.userRepository.findOne({
+            where: [
+                { email: emailOrPhone },
+                { phone: emailOrPhone }
+            ],
+            relations: {
+                userAuth: true
+            }
+        });
+        return [user, null];
+    }
+
+    async findOneById(id: string) {
+        const user = await this.userRepository.findOne({
+            where: { id: id },
+        });
+        return [user, null];
+    }
 }
