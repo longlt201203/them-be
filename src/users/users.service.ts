@@ -69,4 +69,9 @@ export class UsersService {
         });
         return [user, null];
     }
+
+    async findAll() {
+        const users = await this.userRepository.find();
+        return [users, null];
+    }
 }

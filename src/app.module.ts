@@ -6,13 +6,15 @@ import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { CryptoService } from './crypto/crypto.service';
 import { CryptoModule } from './crypto/crypto.module';
+import { LocalFilesModule } from './local-files/local-files.module';
 
 @Module({
   imports: [
     DatabaseModule,
     UsersModule,
     AuthModule,
-    CryptoModule
+    CryptoModule,
+    LocalFilesModule
   ],
   controllers: [AppController],
   providers: [AppService, CryptoService],

@@ -11,4 +11,5 @@ export default class ThemConfig {
     static readonly DB_PASS = process.env.DB_PASS || 'longmetmoivcl';
     static readonly JWT_SECRET = process.env.JWT_SECRET || 'longquametmoi';
     static readonly JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '1d';
+    static readonly GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID || 'longmetmoivcl';
 }

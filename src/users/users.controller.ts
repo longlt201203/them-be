@@ -1,4 +1,4 @@
-import { Body, Controller, HttpStatus, Post } from '@nestjs/common';
+import { Body, Controller, Get, HttpStatus, Post } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import ResponseObject from '../etc/response-object';
 import { CreateUserDto } from './dtos/create-user.dto';
@@ -18,5 +18,14 @@ export class UsersController {
       return new ResponseObject(HttpStatus.BAD_REQUEST, 'Create account failed', null, err);
     }
     return new ResponseObject(HttpStatus.OK, 'Create account successfully', user, null);
+  }
+
+  @Get('find-all')
+  async findAll() {
+    const [users, err] = await this.usersService.findAll();
+    if (err) {
+      return new ResponseObject(HttpStatus.BAD_REQUEST, 'Get all users failed', null, err);
+    }
+    return new ResponseObject(HttpStatus.OK, 'Get all users successfully', users, null);
   }
 }

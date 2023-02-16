@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+</head>
+<body>
+    <div id="g_id_onload"
+        data-client_id="226640533209-sfbj22gqtan2g2v5p5tj0ct9tnctjqi0.apps.googleusercontent.com"
+        data-context="signin"
+        data-ux_mode="popup"
+        data-callback="onSignIn"
+        data-auto_prompt="false">
+    </div>
+
+    <div class="g_id_signin"
+        data-type="standard"
+        data-shape="rectangular"
+        data-theme="outline"
+        data-text="signin_with"
+        data-size="large"
+        data-logo_alignment="left">
+    </div>
+
+    <script>
+        function onSignIn(gooleUser) {
+            console.log(gooleUser.credential);
+        }
+    </script>
+</body>
+</html>
