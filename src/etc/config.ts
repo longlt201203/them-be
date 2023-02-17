@@ -12,4 +12,8 @@ export default class ThemConfig {
     static readonly JWT_SECRET = process.env.JWT_SECRET || 'longquametmoi';
     static readonly JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '1d';
     static readonly GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID || 'longmetmoivcl';
+    static readonly SMTP_HOST = process.env.SMTP_HOST || 'smtp.gmail.com';
+    static readonly SMTP_PORT = parseInt(process.env.SMTP_PORT || '587');
+    static readonly MAILER_USER = process.env.MAILER_USER || 'longmetmoivcl';
+    static readonly MAILER_PASS = process.env.MAILER_PASS || 'longmetmoivcl';
 }

@@ -4,6 +4,7 @@ import { CryptoService } from '../crypto/crypto.service';
 import { Repository } from 'typeorm';
 import { CreateUserDto } from './dtos/create-user.dto';
 import { User } from './entities/user.entity';
+import { UpdateUserDto } from './dtos/update-user.dto';
 
 @Injectable()
 export class UsersService {
@@ -73,5 +74,14 @@ export class UsersService {
     async findAll() {
         const users = await this.userRepository.find();
         return [users, null];
+    }
+
+    async updateProfile(user: User, info: UpdateUserDto) {
+        user.address = info.address ?? user.address;
+        user.fname = info.fname ?? user.fname;
+        user.lname = info.lname ?? user.lname;
+        user.zipCode = info.zipCode ?? user.zipCode;
+        const updatedUser = await this.userRepository.save(user);
+        return [updatedUser, null];
     }
 }

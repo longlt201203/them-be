@@ -4,7 +4,7 @@ import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { CryptoModule } from '../crypto/crypto.module';
 import { JwtModule } from '@nestjs/jwt';
-import ThemConfig from 'src/etc/config';
+import ThemConfig from '../etc/config';
 import { JwtStrategy } from './jwt.strategy';
 
 @Module({

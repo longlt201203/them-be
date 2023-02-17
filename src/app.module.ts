@@ -7,6 +7,8 @@ import { AuthModule } from './auth/auth.module';
 import { CryptoService } from './crypto/crypto.service';
 import { CryptoModule } from './crypto/crypto.module';
 import { LocalFilesModule } from './local-files/local-files.module';
+import { MailerModule } from './mailer/mailer.module';
+import ThemConfig from './etc/config';
 
 @Module({
   imports: [
@@ -14,7 +16,8 @@ import { LocalFilesModule } from './local-files/local-files.module';
     UsersModule,
     AuthModule,
     CryptoModule,
-    LocalFilesModule
+    LocalFilesModule,
+    MailerModule
   ],
   controllers: [AppController],
   providers: [AppService, CryptoService],
