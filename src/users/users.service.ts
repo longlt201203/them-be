@@ -84,4 +84,19 @@ export class UsersService {
         const updatedUser = await this.userRepository.save(user);
         return [updatedUser, null];
     }
+
+    async updatePassword(id: string, password: string) {
+        const user = await this.userRepository.findOne({
+            where: { id: id },
+            relations: {
+                userAuth: true
+            }
+        });
+        if (!user) {
+            return [null, 'User not found'];
+        }
+        user.userAuth.password = await this.cryptoService.hashPassword(password);
+        const updatedUser = await this.userRepository.save(user);
+        return [updatedUser, null];
+    }
 }

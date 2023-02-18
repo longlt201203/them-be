@@ -16,4 +16,7 @@ export default class ThemConfig {
     static readonly SMTP_PORT = parseInt(process.env.SMTP_PORT || '587');
     static readonly MAILER_USER = process.env.MAILER_USER || 'longmetmoivcl';
     static readonly MAILER_PASS = process.env.MAILER_PASS || 'longmetmoivcl';
+    static readonly RESET_PASSWORD_SECRET = process.env.RESET_PASSWORD_SECRET || 'longmetmoivcl';
+    static readonly RESET_PASSWORD_EXPIRES_IN = process.env.RESET_PASSWORD_EXPIRES_IN || '1d';
+    static readonly RESET_PASSWORD_URL = process.env.RESET_PASSWORD_URL || 'http://localhost:3000/reset-password';
 }

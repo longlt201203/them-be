@@ -12,10 +12,4 @@ export class CryptoService {
         const hash = await bcrypt.hash(password, salt);
         return hash;
     }
-
-    async createRandomToken() {
-        const salt = await bcrypt.genSalt();
-        const hash = await bcrypt.hash(Math.random().toString(), salt);
-        return hash;
-    }
 }

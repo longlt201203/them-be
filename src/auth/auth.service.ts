@@ -5,13 +5,15 @@ import ThemConfig from '../etc/config';
 import { CryptoService } from '../crypto/crypto.service';
 import { UsersService } from '../users/users.service';
 import { LoginDto } from './dtos/login.dto';
+import { MailerService } from '../mailer/mailer.service';
 
 @Injectable()
 export class AuthService {
     constructor(
         private readonly usersService: UsersService,
         private readonly cryptoService: CryptoService,
-        private readonly jwtService: JwtService
+        private readonly jwtService: JwtService,
+        private readonly mailerService: MailerService,
     ) {}
 
     async login(info: LoginDto) {
@@ -28,6 +30,9 @@ export class AuthService {
         }
         const token = this.jwtService.sign({
             sub: user.id,
+        }, {
+            secret: ThemConfig.JWT_SECRET,
+            expiresIn: ThemConfig.JWT_EXPIRES_IN
         });
         return [token, null];
     }
@@ -57,7 +62,44 @@ export class AuthService {
         }
         const token = this.jwtService.sign({
             sub: user.id,
+        }, {
+            secret: ThemConfig.JWT_SECRET,
+            expiresIn: ThemConfig.JWT_EXPIRES_IN
         });
         return [token, null];
+    }
+
+    async requestResetPassword(email: string) {
+        const [user, err] = await this.usersService.findOneByEmailOrPhone(email);
+        if (err) {
+            return [null, err];
+        }
+        if (!user) {
+            return [null, 'User not found'];
+        }
+        const token = this.jwtService.sign({
+            sub: user.id,
+        }, {
+            secret: ThemConfig.RESET_PASSWORD_SECRET,
+            expiresIn: ThemConfig.RESET_PASSWORD_EXPIRES_IN
+        });
+        this.mailerService.sendResetPasswordEmail(email, token);
+        return [email, null];
+    }
+
+    async resetPassword(token: string, password: string) {
+        const payload = this.jwtService.verify(token, {
+            secret: ThemConfig.RESET_PASSWORD_SECRET,
+            ignoreExpiration: false,
+        });
+        if (!payload) {
+            return [null, 'Invalid token'];
+        }
+        const userId = payload.sub;
+        const [user, err] = await this.usersService.updatePassword(userId, password);
+        if (err) {
+            return [null, err];
+        }
+        return [user, null];
     }
 }

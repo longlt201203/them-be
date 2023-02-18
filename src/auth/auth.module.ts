@@ -4,16 +4,11 @@ import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { CryptoModule } from '../crypto/crypto.module';
 import { JwtModule } from '@nestjs/jwt';
-import ThemConfig from '../etc/config';
 import { JwtStrategy } from './jwt.strategy';
+import { MailerModule } from '../mailer/mailer.module';
 
 @Module({
-    imports: [JwtModule.register({
-        secret: ThemConfig.JWT_SECRET,
-        signOptions: {
-            expiresIn: ThemConfig.JWT_EXPIRES_IN
-        }
-    }), UsersModule, CryptoModule],
+    imports: [JwtModule, UsersModule, CryptoModule, MailerModule],
     providers: [AuthService, JwtStrategy],
     controllers: [AuthController]
 })

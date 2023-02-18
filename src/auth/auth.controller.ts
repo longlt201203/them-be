@@ -5,6 +5,8 @@ import ResponseObject from '../etc/response-object';
 import { User } from '../users/entities/user.entity';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dtos/login.dto';
+import { RequestResetPasswordDto } from './dtos/request-reset-password.dto';
+import { ResetPasswordDto } from './dtos/reset-password.dto';
 import { JwtAuthGuard } from './jwt-auth.guard';
 
 @Controller('auth')
@@ -47,5 +49,23 @@ export class AuthController {
             return new ResponseObject(HttpStatus.BAD_REQUEST, 'Login with google failed', null, err);
         }
         return new ResponseObject(HttpStatus.OK, 'Login with google success', token, null);
+    }
+
+    @Post('request-reset-password')
+    async requestResetPassword(@Body() body: RequestResetPasswordDto) {
+        const [user, err] = await this.authService.requestResetPassword(body.email);
+        if (err) {
+            return new ResponseObject(HttpStatus.BAD_REQUEST, 'Request reset password failed', null, err);
+        }
+        return new ResponseObject(HttpStatus.OK, 'Request reset password success', user, null);
+    }
+
+    @Post('reset-password')
+    async resetPassword(@Body() body: ResetPasswordDto) {
+        const [user, err] = await this.authService.resetPassword(body.token, body.password);
+        if (err) {
+            return new ResponseObject(HttpStatus.BAD_REQUEST, 'Reset password failed', null, err);
+        }
+        return new ResponseObject(HttpStatus.OK, 'Reset password success', user, null);
     }
 }
