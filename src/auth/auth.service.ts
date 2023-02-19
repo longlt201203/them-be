@@ -6,6 +6,7 @@ import { CryptoService } from '../crypto/crypto.service';
 import { UsersService } from '../users/users.service';
 import { LoginDto } from './dtos/login.dto';
 import { MailerService } from '../mailer/mailer.service';
+import { randomUUID } from 'crypto';
 
 @Injectable()
 export class AuthService {
@@ -34,7 +35,16 @@ export class AuthService {
             secret: ThemConfig.JWT_SECRET,
             expiresIn: ThemConfig.JWT_EXPIRES_IN
         });
-        return [token, null];
+        const refreshToken = this.jwtService.sign({
+            sub: user.id,
+            refresh_token_id: randomUUID(),
+            remember: info.remember
+        }, {
+            secret: ThemConfig.REFRESH_TOKEN_SECRET,
+            expiresIn: info.remember ? ThemConfig.REFRESH_TOKEN_DEFAULT_EXPIRES_IN : ThemConfig.REFRESH_TOKEN_REMEMBER_EXPIRES_IN
+        });
+        this.usersService.updateRefreshToken(user, refreshToken);
+        return [{ access_token: token, refresh_token: refreshToken }, null];
     }
 
     async getInfoFromGoogle(credential: string) {
@@ -66,7 +76,16 @@ export class AuthService {
             secret: ThemConfig.JWT_SECRET,
             expiresIn: ThemConfig.JWT_EXPIRES_IN
         });
-        return [token, null];
+        const refreshToken = this.jwtService.sign({
+            sub: user.id,
+            refresh_token_id: randomUUID(),
+            remember: true
+        }, {
+            secret: ThemConfig.REFRESH_TOKEN_SECRET,
+            expiresIn: ThemConfig.REFRESH_TOKEN_REMEMBER_EXPIRES_IN
+        });
+        this.usersService.updateRefreshToken(user, refreshToken);
+        return [{ access_token: token, refresh_token: refreshToken }, null];
     }
 
     async requestResetPassword(email: string) {
@@ -101,5 +120,48 @@ export class AuthService {
             return [null, err];
         }
         return [user, null];
+    }
+
+    async getAccessToken(refreshToken: string) {
+        try {
+            const payload = this.jwtService.verify(refreshToken, {
+                secret: ThemConfig.REFRESH_TOKEN_SECRET,
+                ignoreExpiration: false,
+            });
+            const userId = payload.sub;
+            const [user, err] = await this.usersService.findOneById(userId, true);
+            if (err) {
+                return [null, err];
+            }
+            if (!user) {
+                return [null, 'User not found'];
+            }
+            const userAuthRefreshTokenPayload = this.jwtService.verify(user.userAuth.refreshToken, {
+                secret: ThemConfig.REFRESH_TOKEN_SECRET,
+                ignoreExpiration: false,
+            });
+            if (userAuthRefreshTokenPayload.refresh_token_id !== payload.refresh_token_id) {
+                this.usersService.updateRefreshToken(user, null);
+                return [null, 'Invalid token'];
+            }
+            const token = this.jwtService.sign({
+                sub: user.id,
+            }, {
+                secret: ThemConfig.JWT_SECRET,
+                expiresIn: ThemConfig.JWT_EXPIRES_IN
+            });
+            const newRefreshToken = this.jwtService.sign({
+                sub: user.id,
+                refresh_token_id: randomUUID(),
+                remember: payload.remember
+            }, {
+                secret: ThemConfig.REFRESH_TOKEN_SECRET,
+                expiresIn: payload.remember ? ThemConfig.REFRESH_TOKEN_REMEMBER_EXPIRES_IN : ThemConfig.REFRESH_TOKEN_DEFAULT_EXPIRES_IN
+            });
+            this.usersService.updateRefreshToken(user, newRefreshToken);
+            return [{ access_token: token, refresh_token: newRefreshToken }, null];
+        } catch (err) {
+            return [null, 'Invalid token'];
+        }
     }
 }

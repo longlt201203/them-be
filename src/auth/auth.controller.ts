@@ -1,5 +1,5 @@
 import { Body, Controller, Get, HttpStatus, Param, Post, UseGuards } from '@nestjs/common';
-import { ApiBearerAuth, ApiParam } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiParam, ApiTags } from '@nestjs/swagger';
 import CurrentUser from '../decorators/current-user.decorator';
 import ResponseObject from '../etc/response-object';
 import { User } from '../users/entities/user.entity';
@@ -10,6 +10,7 @@ import { ResetPasswordDto } from './dtos/reset-password.dto';
 import { JwtAuthGuard } from './jwt-auth.guard';
 
 @Controller('auth')
+@ApiTags('auth')
 export class AuthController {
     constructor(
         private readonly authService: AuthService,
@@ -67,5 +68,15 @@ export class AuthController {
             return new ResponseObject(HttpStatus.BAD_REQUEST, 'Reset password failed', null, err);
         }
         return new ResponseObject(HttpStatus.OK, 'Reset password success', user, null);
+    }
+
+    @Get('get-access-token/:refreshToken')
+    @ApiParam({ name: 'refreshToken', description: 'Refresh token' })
+    async getAccessToken(@Param('refreshToken') refreshToken: string) {
+        const [token, err] = await this.authService.getAccessToken(refreshToken);
+        if (err) {
+            return new ResponseObject(HttpStatus.BAD_REQUEST, 'Get access token failed', null, err);
+        }
+        return new ResponseObject(HttpStatus.OK, 'Get access token success', token, null);
     }
 }

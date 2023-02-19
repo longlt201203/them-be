@@ -13,4 +13,7 @@ export class UserAuth {
 
     @Column({ nullable: true })
     lastLoggedIn: Date;
+
+    @Column({ nullable: true, length: 1000 })
+    refreshToken: string;
 }

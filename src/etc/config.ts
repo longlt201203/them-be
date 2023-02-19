@@ -19,4 +19,7 @@ export default class ThemConfig {
     static readonly RESET_PASSWORD_SECRET = process.env.RESET_PASSWORD_SECRET || 'longmetmoivcl';
     static readonly RESET_PASSWORD_EXPIRES_IN = process.env.RESET_PASSWORD_EXPIRES_IN || '1d';
     static readonly RESET_PASSWORD_URL = process.env.RESET_PASSWORD_URL || 'http://localhost:3000/reset-password';
+    static readonly REFRESH_TOKEN_SECRET = process.env.REFRESH_TOKEN_SECRET || 'longmetmoivcl';
+    static readonly REFRESH_TOKEN_DEFAULT_EXPIRES_IN = process.env.REFRESH_TOKEN_EXPIRES_IN || '7d';
+    static readonly REFRESH_TOKEN_REMEMBER_EXPIRES_IN  = process.env.REFRESH_TOKEN_REMEMBER_EXPIRES_IN || '30d';
 }

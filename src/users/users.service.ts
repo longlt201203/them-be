@@ -64,9 +64,12 @@ export class UsersService {
         return [user, null];
     }
 
-    async findOneById(id: string) {
+    async findOneById(id: string, withAuthInfo?: boolean) {
         const user = await this.userRepository.findOne({
             where: { id: id },
+            relations: {
+                userAuth: withAuthInfo
+            }
         });
         return [user, null];
     }
@@ -99,4 +102,12 @@ export class UsersService {
         const updatedUser = await this.userRepository.save(user);
         return [updatedUser, null];
     }
+
+    async updateRefreshToken(user: User, refreshToken: string) {
+        user.userAuth.refreshToken = refreshToken;
+        const updatedUser = await this.userRepository.save(user);
+        return [updatedUser, null];
+    }
+
+    
 }
