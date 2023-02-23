@@ -16,4 +16,7 @@ export class UserAuth {
 
     @Column({ nullable: true, length: 1000 })
     refreshToken: string;
+
+    @Column({ nullable: true, length: 1000 })
+    resetPasswordToken: string;
 }

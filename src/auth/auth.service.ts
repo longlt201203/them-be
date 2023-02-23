@@ -7,6 +7,7 @@ import { UsersService } from '../users/users.service';
 import { LoginDto } from './dtos/login.dto';
 import { MailerService } from '../mailer/mailer.service';
 import { randomUUID } from 'crypto';
+import { ResetPasswordDto } from './dtos/reset-password.dto';
 
 @Injectable()
 export class AuthService {
@@ -96,30 +97,43 @@ export class AuthService {
         if (!user) {
             return [null, 'User not found'];
         }
+        const code = this.cryptoService.randomNumberCode(6);
         const token = this.jwtService.sign({
-            sub: user.id,
+            code: code,
         }, {
             secret: ThemConfig.RESET_PASSWORD_SECRET,
             expiresIn: ThemConfig.RESET_PASSWORD_EXPIRES_IN
         });
-        this.mailerService.sendResetPasswordEmail(email, token);
+        this.usersService.updateResetPasswordToken(user, token);
+        this.mailerService.sendResetPasswordEmail(email, code);
         return [email, null];
     }
 
-    async resetPassword(token: string, password: string) {
-        const payload = this.jwtService.verify(token, {
-            secret: ThemConfig.RESET_PASSWORD_SECRET,
-            ignoreExpiration: false,
-        });
-        if (!payload) {
-            return [null, 'Invalid token'];
-        }
-        const userId = payload.sub;
-        const [user, err] = await this.usersService.updatePassword(userId, password);
+    async resetPassword(info: ResetPasswordDto) {
+        const [user, err] = await this.usersService.findOneByEmailOrPhone(info.email);
         if (err) {
             return [null, err];
         }
-        return [user, null];
+        if (!user) {
+            return [null, 'User not found'];
+        }
+        try {
+            const payload = this.jwtService.verify(user.userAuth.resetPasswordToken, {
+                secret: ThemConfig.RESET_PASSWORD_SECRET,
+                ignoreExpiration: false,
+            });
+            if (payload.code !== info.code) {
+                return [null, 'Code is incorrect'];
+            }
+            const [updatedUser, err1] = await this.usersService.updatePassword(user.id, info.password);
+            if (err1) {
+                return [null, err1];
+            }
+            this.usersService.updateResetPasswordToken(updatedUser, null);
+            return [updatedUser, null];
+        } catch (err) {
+            return [null, 'Invalid token or expired token'];
+        }
     }
 
     async getAccessToken(refreshToken: string) {

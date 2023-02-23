@@ -63,7 +63,7 @@ export class AuthController {
 
     @Post('reset-password')
     async resetPassword(@Body() body: ResetPasswordDto) {
-        const [user, err] = await this.authService.resetPassword(body.token, body.password);
+        const [user, err] = await this.authService.resetPassword(body);
         if (err) {
             return new ResponseObject(HttpStatus.BAD_REQUEST, 'Reset password failed', null, err);
         }

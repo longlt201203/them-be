@@ -88,7 +88,7 @@ export class UsersService {
         return [updatedUser, null];
     }
 
-    async updatePassword(id: string, password: string) {
+    async updatePassword(id: string, password: string): Promise<[User, string]> {
         const user = await this.userRepository.findOne({
             where: { id: id },
             relations: {
@@ -109,5 +109,9 @@ export class UsersService {
         return [updatedUser, null];
     }
 
-    
+    async updateResetPasswordToken(user: User, resetPasswordToken: string) {
+        user.userAuth.resetPasswordToken = resetPasswordToken;
+        const updatedUser = await this.userRepository.save(user);
+        return [updatedUser, null];
+    }
 }

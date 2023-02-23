@@ -30,11 +30,11 @@ export class MailerService {
         });
     }
 
-    async sendResetPasswordEmail(email: string, token: string) {
+    async sendResetPasswordEmail(email: string, code: string) {
         const result = await this.transporter.sendMail({
             to: email,
             subject: 'Reset password',
-            html: `<p>Click this link to reset your password: <a href="${ThemConfig.RESET_PASSWORD_URL}/${token}">${ThemConfig.RESET_PASSWORD_URL}/${token}</a></p>`,
+            html: `<p>You reset password code is <b>${code}</b>.</p>`,
         });
         return [result, null];
     }
