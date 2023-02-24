@@ -8,6 +8,7 @@ import { CryptoService } from './crypto/crypto.service';
 import { CryptoModule } from './crypto/crypto.module';
 import { LocalFilesModule } from './local-files/local-files.module';
 import { MailerModule } from './mailer/mailer.module';
+import { ThemPostsModule } from './them-posts/them-posts.module';
 import ThemConfig from './etc/config';
 
 @Module({
@@ -17,7 +18,8 @@ import ThemConfig from './etc/config';
     AuthModule,
     CryptoModule,
     LocalFilesModule,
-    MailerModule
+    MailerModule,
+    ThemPostsModule
   ],
   controllers: [AppController],
   providers: [AppService, CryptoService],

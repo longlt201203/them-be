@@ -44,6 +44,7 @@ export class UsersService {
             lname: info.lname,
             phone: info.phone,
             zipCode: info.zipCode,
+            avt: info.avt,
             userAuth: {
                 password: await this.cryptoService.hashPassword(info.password)
             }
@@ -84,33 +85,7 @@ export class UsersService {
         user.fname = info.fname ?? user.fname;
         user.lname = info.lname ?? user.lname;
         user.zipCode = info.zipCode ?? user.zipCode;
-        const updatedUser = await this.userRepository.save(user);
-        return [updatedUser, null];
-    }
-
-    async updatePassword(id: string, password: string): Promise<[User, string]> {
-        const user = await this.userRepository.findOne({
-            where: { id: id },
-            relations: {
-                userAuth: true
-            }
-        });
-        if (!user) {
-            return [null, 'User not found'];
-        }
-        user.userAuth.password = await this.cryptoService.hashPassword(password);
-        const updatedUser = await this.userRepository.save(user);
-        return [updatedUser, null];
-    }
-
-    async updateRefreshToken(user: User, refreshToken: string) {
-        user.userAuth.refreshToken = refreshToken;
-        const updatedUser = await this.userRepository.save(user);
-        return [updatedUser, null];
-    }
-
-    async updateResetPasswordToken(user: User, resetPasswordToken: string) {
-        user.userAuth.resetPasswordToken = resetPasswordToken;
+        user.avt = info.avt;
         const updatedUser = await this.userRepository.save(user);
         return [updatedUser, null];
     }

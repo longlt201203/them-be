@@ -8,6 +8,9 @@ import { LoginDto } from './dtos/login.dto';
 import { MailerService } from '../mailer/mailer.service';
 import { randomUUID } from 'crypto';
 import { ResetPasswordDto } from './dtos/reset-password.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { UserAuth } from '../users/entities/user-auth.entity';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class AuthService {
@@ -16,6 +19,8 @@ export class AuthService {
         private readonly cryptoService: CryptoService,
         private readonly jwtService: JwtService,
         private readonly mailerService: MailerService,
+        @InjectRepository(UserAuth)
+        private readonly userAuthRepository: Repository<UserAuth>
     ) {}
 
     async login(info: LoginDto) {
@@ -44,7 +49,9 @@ export class AuthService {
             secret: ThemConfig.REFRESH_TOKEN_SECRET,
             expiresIn: info.remember ? ThemConfig.REFRESH_TOKEN_DEFAULT_EXPIRES_IN : ThemConfig.REFRESH_TOKEN_REMEMBER_EXPIRES_IN
         });
-        this.usersService.updateRefreshToken(user, refreshToken);
+        user.userAuth.resetPasswordToken = refreshToken;
+        user.userAuth.lastLoggedIn = new Date();
+        this.userAuthRepository.save(user.userAuth);
         return [{ access_token: token, refresh_token: refreshToken }, null];
     }
 
@@ -85,7 +92,9 @@ export class AuthService {
             secret: ThemConfig.REFRESH_TOKEN_SECRET,
             expiresIn: ThemConfig.REFRESH_TOKEN_REMEMBER_EXPIRES_IN
         });
-        this.usersService.updateRefreshToken(user, refreshToken);
+        user.userAuth.resetPasswordToken = refreshToken;
+        user.userAuth.lastLoggedIn = new Date();
+        this.userAuthRepository.save(user.userAuth);
         return [{ access_token: token, refresh_token: refreshToken }, null];
     }
 
@@ -104,7 +113,8 @@ export class AuthService {
             secret: ThemConfig.RESET_PASSWORD_SECRET,
             expiresIn: ThemConfig.RESET_PASSWORD_EXPIRES_IN
         });
-        this.usersService.updateResetPasswordToken(user, token);
+        user.userAuth.resetPasswordToken = token;
+        this.userAuthRepository.save(user.userAuth);
         this.mailerService.sendResetPasswordEmail(email, code);
         return [email, null];
     }
@@ -125,12 +135,11 @@ export class AuthService {
             if (payload.code !== info.code) {
                 return [null, 'Code is incorrect'];
             }
-            const [updatedUser, err1] = await this.usersService.updatePassword(user.id, info.password);
-            if (err1) {
-                return [null, err1];
-            }
-            this.usersService.updateResetPasswordToken(updatedUser, null);
-            return [updatedUser, null];
+            user.userAuth.password = await this.cryptoService.hashPassword(info.password);
+            user.userAuth.resetPasswordToken = null;
+            user.userAuth.refreshToken = null;
+            this.userAuthRepository.save(user.userAuth);
+            return [user, null];
         } catch (err) {
             return [null, 'Invalid token or expired token'];
         }
@@ -155,7 +164,8 @@ export class AuthService {
                 ignoreExpiration: false,
             });
             if (userAuthRefreshTokenPayload.refresh_token_id !== payload.refresh_token_id) {
-                this.usersService.updateRefreshToken(user, null);
+                user.userAuth.refreshToken = null;
+                this.userAuthRepository.save(user.userAuth);
                 return [null, 'Invalid token'];
             }
             const token = this.jwtService.sign({
@@ -172,7 +182,8 @@ export class AuthService {
                 secret: ThemConfig.REFRESH_TOKEN_SECRET,
                 expiresIn: payload.remember ? ThemConfig.REFRESH_TOKEN_REMEMBER_EXPIRES_IN : ThemConfig.REFRESH_TOKEN_DEFAULT_EXPIRES_IN
             });
-            this.usersService.updateRefreshToken(user, newRefreshToken);
+            user.userAuth.refreshToken = newRefreshToken;
+            this.userAuthRepository.save(user.userAuth);
             return [{ access_token: token, refresh_token: newRefreshToken }, null];
         } catch (err) {
             return [null, 'Invalid token'];

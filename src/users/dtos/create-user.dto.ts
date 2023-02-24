@@ -21,4 +21,7 @@ export class CreateUserDto {
 
     @ApiProperty()
     zipCode: string;
+
+    @ApiProperty()
+    avt: string;
 }
