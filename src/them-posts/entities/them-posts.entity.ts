@@ -19,19 +19,19 @@ export class ThemPost {
     @CreateDateColumn()
     createdAt: Date;
 
-    @Column({ type: 'enum', enum: UrgentEnum, default: UrgentEnum.NORMAL })
+    @Column({ enum: UrgentEnum, default: UrgentEnum.NORMAL })
     urgent: UrgentEnum;
 
     @Column()
     address: string;
 
-    @Column({ type: 'enum', enum: PayTypeEnum, default: PayTypeEnum.FIXED })
+    @Column({ enum: PayTypeEnum, default: PayTypeEnum.FIXED })
     payType: PayTypeEnum;
 
     @Column()
     payAmount: number;
 
-    @Column({ type: 'enum', enum: PostStatusEnum, default: PostStatusEnum.OPEN })
+    @Column({ enum: PostStatusEnum, default: PostStatusEnum.OPEN })
     status: PostStatusEnum;
 
     @ManyToOne(() => User, user => user.posts)

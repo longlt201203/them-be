@@ -35,7 +35,7 @@
     "bcrypt": "^5.1.0",
     "dotenv": "^16.0.3",
     "google-auth-library": "^8.7.0",
-    "mysql2": "^3.1.2",
+    "mssql": "^7.3.5",
     "nodemailer": "^6.9.1",
     "passport": "^0.6.0",
     "passport-jwt": "^4.0.1",

@@ -3,12 +3,15 @@ import { DataSource } from "typeorm";
 import { resolve } from "path";
 
 const ThemDataSource = new DataSource({
-    type: 'mysql',
+    type: 'mssql',
     host: ThemConfig.DB_HOST,
     port: ThemConfig.DB_PORT,
     database: ThemConfig.DB_NAME,
     username: ThemConfig.DB_USER,
     password: ThemConfig.DB_PASS,
+    extra: {
+        trustServerCertificate: true
+    },
     entities: [resolve(__dirname + '/../**/*.entity{.js,.ts}')],
     migrations: [resolve(__dirname + '/../migrations/*{.js,.ts}')],
     logging: 'all',
