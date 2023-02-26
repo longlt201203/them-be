@@ -49,7 +49,7 @@ export class AuthService {
             secret: ThemConfig.REFRESH_TOKEN_SECRET,
             expiresIn: info.remember ? ThemConfig.REFRESH_TOKEN_DEFAULT_EXPIRES_IN : ThemConfig.REFRESH_TOKEN_REMEMBER_EXPIRES_IN
         });
-        user.userAuth.resetPasswordToken = refreshToken;
+        user.userAuth.refreshToken = refreshToken;
         user.userAuth.lastLoggedIn = new Date();
         this.userAuthRepository.save(user.userAuth);
         return [{ access_token: token, refresh_token: refreshToken }, null];
@@ -92,7 +92,7 @@ export class AuthService {
             secret: ThemConfig.REFRESH_TOKEN_SECRET,
             expiresIn: ThemConfig.REFRESH_TOKEN_REMEMBER_EXPIRES_IN
         });
-        user.userAuth.resetPasswordToken = refreshToken;
+        user.userAuth.refreshToken = refreshToken;
         user.userAuth.lastLoggedIn = new Date();
         this.userAuthRepository.save(user.userAuth);
         return [{ access_token: token, refresh_token: refreshToken }, null];
