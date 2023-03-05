@@ -7,6 +7,7 @@ import { AuthService } from './auth.service';
 import { LoginDto } from './dtos/login.dto';
 import { RequestResetPasswordDto } from './dtos/request-reset-password.dto';
 import { ResetPasswordDto } from './dtos/reset-password.dto';
+import { VerifyResetPasswordCodeDto } from './dtos/verify-reset-password.dto';
 import { JwtAuthGuard } from './jwt-auth.guard';
 
 @Controller('auth')
@@ -59,6 +60,15 @@ export class AuthController {
             return new ResponseObject(HttpStatus.BAD_REQUEST, 'Request reset password failed', null, err);
         }
         return new ResponseObject(HttpStatus.OK, 'Request reset password success', user, null);
+    }
+
+    @Post('verify-reset-password-code')
+    async verifyResetPasswordToken(@Body() body: VerifyResetPasswordCodeDto) {
+        const [user, err] = await this.authService.verifyResetPasswordToken(body);
+        if (err) {
+            return new ResponseObject(HttpStatus.BAD_REQUEST, 'Verify reset password token failed', null, err);
+        }
+        return new ResponseObject(HttpStatus.OK, 'Verify reset password token success', user, null);
     }
 
     @Post('reset-password')

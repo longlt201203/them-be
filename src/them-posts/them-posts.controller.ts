@@ -41,4 +41,16 @@ export class ThemPostsController {
     }
     return new ResponseObject(HttpStatus.OK, 'Create post success', post, null);
   }
+
+  @Post('update-one/:id')
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @ApiParam({ name: 'id', type: String })
+  async updateOne(@CurrentUser() user: User, @Param('id') id: string, @Body() body: CreatePostDto) {
+    const [post, err] = await this.themPostsService.updateOne(user, id, body);
+    if (err) {
+      return new ResponseObject(HttpStatus.BAD_REQUEST, 'Update post failed', null, err);
+    }
+    return new ResponseObject(HttpStatus.OK, 'Update post success', post, null);
+  }
 }

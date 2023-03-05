@@ -11,6 +11,7 @@ import { ResetPasswordDto } from './dtos/reset-password.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserAuth } from '../users/entities/user-auth.entity';
 import { Repository } from 'typeorm';
+import { VerifyResetPasswordCodeDto } from './dtos/verify-reset-password.dto';
 
 @Injectable()
 export class AuthService {
@@ -127,22 +128,15 @@ export class AuthService {
         if (!user) {
             return [null, 'User not found'];
         }
-        try {
-            const payload = this.jwtService.verify(user.userAuth.resetPasswordToken, {
-                secret: ThemConfig.RESET_PASSWORD_SECRET,
-                ignoreExpiration: false,
-            });
-            if (payload.code !== info.code) {
-                return [null, 'Code is incorrect'];
-            }
-            user.userAuth.password = await this.cryptoService.hashPassword(info.password);
-            user.userAuth.resetPasswordToken = null;
-            user.userAuth.refreshToken = null;
-            this.userAuthRepository.save(user.userAuth);
-            return [user, null];
-        } catch (err) {
-            return [null, 'Invalid token or expired token'];
+        if (!user.userAuth.isResetPassword) {
+            return [null, 'You cannot reset password'];
         }
+        user.userAuth.password = await this.cryptoService.hashPassword(info.password);
+        user.userAuth.resetPasswordToken = null;
+        user.userAuth.refreshToken = null;
+        user.userAuth.isResetPassword = false;
+        this.userAuthRepository.save(user.userAuth);
+        return [user, null];
     }
 
     async getAccessToken(refreshToken: string) {
@@ -187,6 +181,30 @@ export class AuthService {
             return [{ access_token: token, refresh_token: newRefreshToken }, null];
         } catch (err) {
             return [null, 'Invalid token'];
+        }
+    }
+
+    async verifyResetPasswordToken(info: VerifyResetPasswordCodeDto) {
+        const [user, err] = await this.usersService.findOneByEmailOrPhone(info.email);
+        if (err) {
+            return [null, err];
+        }
+        if (!user) {
+            return [null, 'User not found'];
+        }
+        try {
+            const payload = this.jwtService.verify(user.userAuth.resetPasswordToken, {
+                secret: ThemConfig.RESET_PASSWORD_SECRET,
+                ignoreExpiration: false,
+            });
+            if (payload.code !== info.code) {
+                return [null, 'Code is incorrect'];
+            }
+            user.userAuth.isResetPassword = true;
+            this.userAuthRepository.save(user.userAuth);
+            return [null, null];
+        } catch (err) {
+            return [null, 'Invalid token or expired token'];
         }
     }
 }
