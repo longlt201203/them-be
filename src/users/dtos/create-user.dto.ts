@@ -31,4 +31,7 @@ export class CreateUserDto {
 
     @ApiProperty()
     avt: string;
+
+    @ApiProperty()
+    cover: string;
 }

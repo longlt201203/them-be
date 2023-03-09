@@ -45,6 +45,7 @@ export class UsersService {
             phone: info.phone,
             zipCode: info.zipCode,
             avt: info.avt,
+            cover: info.cover,
             userAuth: {
                 password: await this.cryptoService.hashPassword(info.password)
             }
@@ -86,6 +87,7 @@ export class UsersService {
         user.lname = info.lname ?? user.lname;
         user.zipCode = info.zipCode ?? user.zipCode;
         user.avt = info.avt;
+        user.cover = info.cover;
         const updatedUser = await this.userRepository.save(user);
         return [updatedUser, null];
     }

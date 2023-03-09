@@ -28,6 +28,9 @@ export class User {
     @Column({ nullable: true })
     avt: string;
 
+    @Column({ nullable: true })
+    cover: string;
+
     @OneToOne(() => UserAuth, { cascade: true })
     @JoinColumn()
     userAuth: UserAuth;
