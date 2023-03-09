@@ -1,0 +1,26 @@
+version: '3.0'
+services:
+  mssql:
+    image: mcr.microsoft.com/mssql/server:2017-latest
+    container_name: them-db
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=Admin@long123
+    ports:
+      - 1433:1433
+    volumes:
+      - ./db:/var/opt/mssql/data
+    restart: always
+
+  app:
+    image: longthanhle1122/them-be:latest
+    container_name: them-be
+    ports:
+      - 3030:3030
+    depends_on:
+      - mssql
+    volumes:
+      - ./app/uploads:/app/uploads
+      - ./app/migrations:/app/src/migrations
+    restart: always
+    
