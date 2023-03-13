@@ -9,6 +9,7 @@ import { CryptoModule } from './crypto/crypto.module';
 import { LocalFilesModule } from './local-files/local-files.module';
 import { MailerModule } from './mailer/mailer.module';
 import { ThemPostsModule } from './them-posts/them-posts.module';
+import { ZipModule } from './zip/zip.module';
 import ThemConfig from './etc/config';
 
 @Module({
@@ -19,7 +20,8 @@ import ThemConfig from './etc/config';
     CryptoModule,
     LocalFilesModule,
     MailerModule,
-    ThemPostsModule
+    ThemPostsModule,
+    ZipModule
   ],
   controllers: [AppController],
   providers: [AppService, CryptoService],

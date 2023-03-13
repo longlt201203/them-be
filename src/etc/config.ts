@@ -1,6 +1,10 @@
 import { config } from "dotenv";
 
-config();
+if (process.env.NODE_ENV == 'production') {
+    config({ path: '.env.deploy' });
+} else {
+    config();
+}
 
 export default class ThemConfig {
     static readonly PORT = parseInt(process.env.PORT || '5000');

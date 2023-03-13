@@ -82,10 +82,24 @@ export class UsersService {
     }
 
     async updateProfile(user: User, info: UpdateUserDto) {
+        const err = [];
+        const checkPhone = await this.userRepository.findOne({
+            where: { phone: info.phone }
+        });
+        if (checkPhone && checkPhone.id !== user.id) {
+            err.push({
+                at: 'phone',
+                message: 'Phone number has been used'
+            });
+        }
+        if (err.length > 0) {
+            return [null, err];
+        }
         user.address = info.address ?? user.address;
         user.fname = info.fname ?? user.fname;
         user.lname = info.lname ?? user.lname;
         user.zipCode = info.zipCode ?? user.zipCode;
+        user.phone = info.phone ?? user.phone;
         user.avt = info.avt;
         user.cover = info.cover;
         const updatedUser = await this.userRepository.save(user);
