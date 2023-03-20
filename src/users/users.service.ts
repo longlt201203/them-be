@@ -14,7 +14,7 @@ export class UsersService {
         private readonly cryptoService: CryptoService
     ) {}
 
-    async createOne(info: CreateUserDto) {
+    async createOne(info: CreateUserDto): Promise<[User, any]> {
         const err = [];
         const checkEmail = await this.userRepository.findOne({
             where: { email: info.email }
@@ -25,14 +25,16 @@ export class UsersService {
                 message: 'Email has been used'
             });
         }
-        const checkPhone = await this.userRepository.findOne({
-            where: { phone: info.phone }
-        });
-        if (checkPhone) {
-            err.push({
-                at: 'phone',
-                message: 'Phone number has been used'
+        if (info.phone) {
+            const checkPhone = await this.userRepository.findOne({
+                where: { phone: info.phone }
             });
+            if (checkPhone) {
+                err.push({
+                    at: 'phone',
+                    message: 'Phone number has been used'
+                });
+            }
         }
         if (err.length > 0) {
             return [null, err];
@@ -47,7 +49,7 @@ export class UsersService {
             avt: info.avt,
             cover: info.cover,
             userAuth: {
-                password: await this.cryptoService.hashPassword(info.password)
+                password: info.password ? await this.cryptoService.hashPassword(info.password) : null
             }
         });
         return [user, null];

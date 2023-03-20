@@ -5,7 +5,7 @@ export class UserAuth {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column()
+    @Column({ nullable: true })
     password: string;
 
     @CreateDateColumn()
@@ -13,6 +13,9 @@ export class UserAuth {
 
     @Column({ nullable: true })
     lastLoggedIn: Date;
+
+    @Column({ nullable: true })
+    verifyEmailAt: Date;
 
     @Column({ default: false })
     isResetPassword: boolean;
@@ -22,4 +25,7 @@ export class UserAuth {
 
     @Column({ nullable: true, length: 1000 })
     resetPasswordToken: string;
+
+    @Column({ nullable: true, length: 1000 })
+    verifyEmailToken: string;
 }

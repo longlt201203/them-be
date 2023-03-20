@@ -38,4 +38,13 @@ export class MailerService {
         });
         return [result, null];
     }
+
+    async sendVerifyEmail(email: string, code: string) {
+        const result = await this.transporter.sendMail({
+            to: email,
+            subject: 'Verify email',
+            html: `<p>You verify email code is <b>${code}</b>.</p>`,
+        });
+        return [result, null];
+    }
 }

@@ -43,6 +43,16 @@ export class AuthController {
         return new ResponseObject(HttpStatus.OK, 'Get info from google success', payload, null);
     }
 
+    @Get('sign-up-with-google/:credential')
+    @ApiParam({ name: 'credential', description: 'Google credential' })
+    async signUpWithGoogle(@Param('credential') credential: string) {
+        const [token, err] = await this.authService.registerWithGoole(credential);
+        if (err) {
+            return new ResponseObject(HttpStatus.BAD_REQUEST, 'Sign up with google failed', null, err);
+        }
+        return new ResponseObject(HttpStatus.OK, 'Sign up with google success', token, null);
+    }
+
     @Get('login-with-google/:credential')
     @ApiParam({ name: 'credential', description: 'Google credential' })
     async loginWithGoogle(@Param('credential') credential: string) {
@@ -88,5 +98,30 @@ export class AuthController {
             return new ResponseObject(HttpStatus.BAD_REQUEST, 'Get access token failed', null, err);
         }
         return new ResponseObject(HttpStatus.OK, 'Get access token success', token, null);
+    }
+
+    @Get('request-verifying-email')
+    @ApiBearerAuth()
+    @UseGuards(JwtAuthGuard)
+    async requestVerifyingEmail(@CurrentUser() user: User) {
+        const [userAuth, err] = await this.authService.requestVerifyEmail(user.email);
+        if (err) {
+            return new ResponseObject(HttpStatus.BAD_REQUEST, 'Request verifying email failed', null, err);
+        }
+        return new ResponseObject(HttpStatus.OK, 'Request verifying email success', userAuth, null);
+    }
+
+    @Get('verify-email/:code')
+    @ApiBearerAuth()
+    @UseGuards(JwtAuthGuard)
+    async verifyEmail(@CurrentUser() user: User, @Param('code') code: string) {
+        const [userAuth, err] = await this.authService.verifyEmail({
+            email: user.email,
+            code: code,
+        });
+        if (err) {
+            return new ResponseObject(HttpStatus.BAD_REQUEST, 'Verify email failed', null, err);
+        }
+        return new ResponseObject(HttpStatus.OK, 'Verify email success', userAuth, null);
     }
 }
